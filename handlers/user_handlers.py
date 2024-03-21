@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message, ContentType
 from lexicon.lexicon import MESSAGES
-from database.users_config import load_users_config, save_users_config
+from database.users_sqlite import load_users_config, save_users_config
 from services.services import translate
 from keyboards.keyboards import create_language_keyboard
 from config_data.langs import bot_lang_from, bot_lang_to
