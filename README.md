@@ -4,8 +4,8 @@
 
 ## Introduction
 
-The project employs [aiogram]('https://github.com/aiogram/aiogram')
-and [googletrans]('https://github.com/ssut/py-googletrans').
+The project employs [aiogram](https://github.com/aiogram/aiogram)
+and [googletrans](https://github.com/ssut/py-googletrans).
 
 Users configurations are stored in [SQLite database](https://docs.python.org/3/library/sqlite3.html).
 
