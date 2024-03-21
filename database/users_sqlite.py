@@ -39,8 +39,8 @@ def save_users_config(users_config):
         src_lang = config['src_lang']
         dest_lang = config['dest_lang']
         cursor.execute(f'''
-                    INSERT OR REPLACE INTO {TABLE_NAME} (user_id, src_lang, dest_lang, created_at)
-                    VALUES (?, ?, ?, current_timestamp)
+                    insert or replace into {TABLE_NAME} (user_id, src_lang, dest_lang, created_at)
+                    values (?, ?, ?, current_timestamp)
                 ''', (user_id, src_lang, dest_lang))
     conn.commit()
     conn.close()
