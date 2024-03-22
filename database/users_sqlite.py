@@ -1,6 +1,6 @@
 import sqlite3
 
-DATABASE_FILE = 'database/users_config.db'
+DATABASE_FILE = 'database/users.db'
 USERS_CONFIG = 'users_config'
 
 
