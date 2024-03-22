@@ -4,6 +4,26 @@
 
 ## Introduction
 
+Welcome to our multi-language translator bot!
+
+This is not your average translator bot.
+
+To get a translation, simply type in your message.
+
+We support translation between 9 languages and even have an auto-detect feature for convenience.
+
+🇨🇳 Chinese
+🇬🇧 English
+🇮🇳 Hindi
+🇪🇸 Spanish
+🇫🇷 French
+🇸🇦 Arabic
+🇧🇩 Bengali
+🇵🇹 Portuguese
+🇷🇺 Russian
+🌐 Auto Detect
+
+
 The project employs [aiogram](https://github.com/aiogram/aiogram)
 and [googletrans](https://github.com/ssut/py-googletrans).
 
