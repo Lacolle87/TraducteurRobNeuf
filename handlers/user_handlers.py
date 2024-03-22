@@ -51,9 +51,8 @@ async def help(message: Message):
 @router.message(F.content_type == ContentType.TEXT)
 async def send_translation(message: Message):
     user_id = str(message.from_user.id)
-    src_lang = users_config[user_id]['src_lang']
-    dest_lang = users_config[user_id]['dest_lang']
-    translated_text = translate(message.text, src_lang=src_lang, dest_lang=dest_lang)
+    config_lang = (users_config[user_id][key] for key in ['src_lang', 'dest_lang'])
+    translated_text = translate(message.text, src_lang=next(config_lang), dest_lang=next(config_lang))
     save_stats(users_config)
     await message.answer(translated_text)
 

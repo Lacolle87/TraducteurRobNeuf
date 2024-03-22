@@ -48,8 +48,7 @@ TraducteurRobNeuf
 │   └── main_menu.py
 ├── lexicon
 │   └── lexicon.py
-├── logs
-│   └── bot.log
+├── logger
 │   └── logger.py
 ├── services
 │   └── services.py

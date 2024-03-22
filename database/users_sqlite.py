@@ -1,7 +1,10 @@
 import sqlite3
+from cachetools import cached, TTLCache
 
 DATABASE_FILE = 'database/users.db'
 USERS_CONFIG = 'users_config'
+
+cache = TTLCache(maxsize=100, ttl=300)
 
 
 def create_table():
@@ -15,6 +18,7 @@ def create_table():
         conn.commit()
 
 
+@cached(cache=cache)
 def load_users_config():
     create_table()
     users_config = {}
