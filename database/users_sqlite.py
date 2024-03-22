@@ -1,46 +1,47 @@
 import sqlite3
 
 DATABASE_FILE = 'database/users_config.db'
-TABLE_NAME = 'users_config'
+USERS_CONFIG = 'users_config'
 
 
 def create_table():
-    conn = sqlite3.connect(DATABASE_FILE)
-    cursor = conn.cursor()
-    cursor.execute(f'''create table if not exists {TABLE_NAME} (
-                        user_id integer primary key,
-                        src_lang text,
-                        dest_lang text,
-                        created_at timestamp default current_timestamp
-                      )''')
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f'''create table if not exists {USERS_CONFIG} (
+                            user_id integer primary key,
+                            src_lang text,
+                            dest_lang text
+                          )''')
+        conn.commit()
 
 
 def load_users_config():
     create_table()
-    conn = sqlite3.connect(DATABASE_FILE)
-    cursor = conn.cursor()
-    cursor.execute(f'select user_id, src_lang, dest_lang from {TABLE_NAME}')
-    rows = cursor.fetchall()
     users_config = {}
-    for row in rows:
-        user_id, src_lang, dest_lang = row
-        users_config[str(user_id)] = {'src_lang': src_lang, 'dest_lang': dest_lang}
-    conn.close()
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f'select * from {USERS_CONFIG}')
+        rows = cursor.fetchall()
+        for row in rows:
+            user_id, src_lang, dest_lang = row
+            users_config[str(user_id)] = {'src_lang': src_lang, 'dest_lang': dest_lang}
     return users_config
 
 
 def save_users_config(users_config):
     create_table()
-    conn = sqlite3.connect(DATABASE_FILE)
-    cursor = conn.cursor()
-    for user_id, config in users_config.items():
-        src_lang = config['src_lang']
-        dest_lang = config['dest_lang']
-        cursor.execute(f'''
-                    insert or replace into {TABLE_NAME} (user_id, src_lang, dest_lang, created_at)
-                    values (?, ?, ?, current_timestamp)
-                ''', (user_id, src_lang, dest_lang))
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        try:
+            conn.execute('begin transaction')
+            for user_id, config in users_config.items():
+                src_lang = config['src_lang']
+                dest_lang = config['dest_lang']
+                cursor.execute(f'''
+                        insert or replace into {USERS_CONFIG}  (user_id, src_lang, dest_lang)
+                        values (?, ?, ?)
+                    ''', (user_id, src_lang, dest_lang))
+            conn.commit()
+        except sqlite3.Error as e:
+            print('Error:', e)
+            conn.rollback()

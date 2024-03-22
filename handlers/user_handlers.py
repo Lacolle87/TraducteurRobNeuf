@@ -5,7 +5,7 @@ from lexicon.lexicon import MESSAGES
 from database.users_sqlite import load_users_config, save_users_config
 from services.services import translate
 from keyboards.keyboards import create_language_keyboard
-from config_data.langs import bot_lang_from, bot_lang_to
+from config_data.langs import bot_lang_from, bot_lang_to, process_language_names
 
 router = Router()
 users_config = load_users_config()
@@ -19,8 +19,7 @@ async def start(message: Message):
             'src_lang': 'auto',
             'dest_lang': 'en'
         }
-    src_name = next((lang for lang, code in bot_lang_from.items() if code == users_config[user_id]['src_lang']))
-    dest_name = next((lang for lang, code in bot_lang_to.items() if code == users_config[user_id]['dest_lang']))
+    src_name, dest_name = process_language_names(users_config, user_id, bot_lang_from, bot_lang_to)
     save_users_config(users_config)
     await message.answer(MESSAGES['/start'] + f'\n{src_name} ->> '
                                               f'{dest_name}')
@@ -29,8 +28,7 @@ async def start(message: Message):
 @router.message(Command(commands='change_language'))
 async def change_language(message: Message):
     user_id = str(message.from_user.id)
-    src_name = next((lang for lang, code in bot_lang_from.items() if code == users_config[user_id]['src_lang']))
-    dest_name = next((lang for lang, code in bot_lang_to.items() if code == users_config[user_id]['dest_lang']))
+    src_name, dest_name = process_language_names(users_config, user_id, bot_lang_from, bot_lang_to)
     await message.answer(MESSAGES['/change_language'])
     await message.answer(f'Source: {src_name}', reply_markup=create_language_keyboard(bot_lang_from, prefix='FROM'))
     await message.answer(f'Destination: {dest_name}', reply_markup=create_language_keyboard(bot_lang_to, prefix='TO'))
@@ -44,8 +42,7 @@ async def help(message: Message):
 @router.message(Command(commands='configs'))
 async def help(message: Message):
     user_id = str(message.from_user.id)
-    src_name = next((lang for lang, code in bot_lang_from.items() if code == users_config[user_id]['src_lang']))
-    dest_name = next((lang for lang, code in bot_lang_to.items() if code == users_config[user_id]['dest_lang']))
+    src_name, dest_name = process_language_names(users_config, user_id, bot_lang_from, bot_lang_to)
     await message.answer(MESSAGES['/configs'] + f'\n{src_name} ->> '
                                                 f'{dest_name}')
 

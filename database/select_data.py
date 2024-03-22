@@ -1,15 +1,14 @@
 import sqlite3
 
 DATABASE_FILE = 'users_config.db'
-TABLE_NAME = 'users_config'
+USERS_CONFIG = 'users_config'
 
 
 def select_all_data():
-    conn = sqlite3.connect(DATABASE_FILE)
-    cursor = conn.cursor()
-    cursor.execute(f'select * from {TABLE_NAME}')
-    rows = cursor.fetchall()
-    conn.close()
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f'select * from {USERS_CONFIG}')
+        rows = cursor.fetchall()
     return rows
 
 
