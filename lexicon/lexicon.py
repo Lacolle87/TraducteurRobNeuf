@@ -1,7 +1,7 @@
 MESSAGES: dict[str, str] = {
-    '/start': 'Bienvenue à «Traducteur Rob Neuf». '
+    '/start': 'Bienvenue à «Traducteur Rob Neuf».'
               '\n\nVous pouvez choisir la langue en appuyant sur: \n/change_language \nou utiliser les paramètres par défaut.'
-              '\n\nParamètres définis maintenant: ',
+              '\n\nParamètres définis maintenant:',
     '/help': '\nWelcome to our multi-language translator bot!'
              '\n\nThis is not your average translator bot.'
              '\n\nTo get a translation, simply type in your message.'
@@ -21,7 +21,8 @@ MESSAGES: dict[str, str] = {
              '\n🇵🇹 Portuguese'
              '\n🇷🇺 Russian'
              '\n🌐 Auto Detect',
-    '/change_language': 'Select desired language for translation:'
+    '/change_language': 'Select desired language for translation:',
+    '/configs': 'Paramètres définis maintenant:'
 }
 
 LEXICON_COMMANDS: dict[str, str] = {
