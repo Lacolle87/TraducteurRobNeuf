@@ -24,12 +24,16 @@ async def start(message: Message):
     save_users_config(users_config)
     await message.answer(MESSAGES['/start'] + f'\n{src_name} ->> '
                                               f'{dest_name}')
+
+
+@router.message(Command(commands='change_language'))
+async def start(message: Message):
     await message.answer('From:', reply_markup=create_language_keyboard(bot_lang_from, prefix='FROM'))
     await message.answer('To:', reply_markup=create_language_keyboard(bot_lang_to, prefix='TO'))
 
 
 @router.message(Command(commands='help'))
-async def start(message: Message):
+async def help(message: Message):
     await message.answer(MESSAGES['/help'])
 
 
