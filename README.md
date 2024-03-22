@@ -38,7 +38,7 @@ TraducteurRobNeuf
 │   └── langs.py
 ├── database
 │   └── select_data.py
-│   └── users_config.db
+│   └── users.db
 │   └── users_sqlite.py
 ├── handlers
 │   └── other_handlers.py
