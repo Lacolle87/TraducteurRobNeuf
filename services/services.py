@@ -9,8 +9,8 @@ def translate(text: str | None, src_lang='auto', dest_lang='en') -> str:
     return translation.text
 
 
-def hash_user_id(user_id):
-    user_id_bytes = str(user_id).encode('utf-8')
+def hash_user_id(user_id: str) -> str:
+    user_id_bytes = user_id.encode('utf-8')
     hash_object = hashlib.sha256(user_id_bytes)
     hashed_user_id = hash_object.hexdigest()
     return hashed_user_id

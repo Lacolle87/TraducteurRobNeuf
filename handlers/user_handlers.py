@@ -12,16 +12,13 @@ router = Router()
 users_config = load_users_config()
 
 
-def get_user_config_and_language_names(message: Message):
+def get_hashed_user_id(message: Message) -> str:
     user_id = str(message.from_user.id)
     hashed_user_id = hash_user_id(user_id)
-    config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
-    src_name = reversed_bot_lang_from.get(next(config_lang))
-    dest_name = reversed_bot_lang_to.get(next(config_lang))
-    return src_name, dest_name
+    return hashed_user_id
 
 
-def get_language_names(hashed_user_id):
+def get_language_names(hashed_user_id: str) -> tuple[str, str, str, str]:
     src_lang = users_config[hashed_user_id]['src_lang']
     dest_lang = users_config[hashed_user_id]['dest_lang']
     src_name = reversed_bot_lang_from.get(src_lang)
@@ -45,7 +42,7 @@ async def start_message(message: Message):
 
 @router.message(Command(commands='change_language'))
 async def change_language(message: Message):
-    src_name, dest_name = get_user_config_and_language_names(message)
+    src_name, dest_name, _, _ = get_language_names(get_hashed_user_id(message))
     await message.answer(MESSAGES['/change_language'])
     await message.answer(f'Source: {src_name}', reply_markup=create_language_keyboard(bot_lang_from, prefix='FROM'))
     await message.answer(f'Destination: {dest_name}', reply_markup=create_language_keyboard(bot_lang_to, prefix='TO'))
@@ -72,14 +69,13 @@ async def help_message(message: Message):
 
 @router.message(Command(commands='configs'))
 async def configs_message(message: Message):
-    src_name, dest_name = get_user_config_and_language_names(message)
+    src_name, dest_name, _, _ = get_language_names(get_hashed_user_id(message))
     await message.answer(f'{MESSAGES["/configs"]}\n{src_name} ->> {dest_name}')
 
 
 @router.message(F.content_type == ContentType.TEXT)
 async def send_translation(message: Message):
-    user_id = str(message.from_user.id)
-    hashed_user_id = hash_user_id(user_id)
+    hashed_user_id = get_hashed_user_id(message)
     config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
     translated_text = translate(message.text, src_lang=next(config_lang), dest_lang=next(config_lang))
     save_stats(users_config)
