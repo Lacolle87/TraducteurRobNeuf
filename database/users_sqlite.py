@@ -1,6 +1,5 @@
 import sqlite3
 from cachetools import cached, TTLCache
-from services.services import hash_user_id
 
 DATABASE_FILE = 'database/users.db'
 USERS_CONFIG = 'users_config'
@@ -12,7 +11,8 @@ def create_table():
     with sqlite3.connect(DATABASE_FILE) as conn:
         cursor = conn.cursor()
         cursor.execute(f'''create table if not exists {USERS_CONFIG} (
-                            hashed_user_id text primary key,
+                            id integer primary key,
+                            hashed_user_id text unique,
                             src_lang text,
                             dest_lang text
                           )''')

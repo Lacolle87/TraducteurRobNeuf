@@ -12,23 +12,18 @@ router = Router()
 users_config = load_users_config()
 
 
-async def get_user_data(message: Message) -> tuple:
+@router.message(Command(commands='start'))
+async def start_message(message: Message):
     user_id = str(message.from_user.id)
     hashed_user_id = hash_user_id(user_id)
-    return hashed_user_id, reversed_bot_lang_from.get(
-        users_config[hashed_user_id]['src_lang']), reversed_bot_lang_to.get(users_config[hashed_user_id]['dest_lang'])
-
-
-@router.message(Command(commands='start'))
-async def start(message: Message):
-    hashed_user_id, _, _ = await get_user_data(message)
     if hashed_user_id not in users_config:
         users_config[hashed_user_id] = {
             'src_lang': 'auto',
             'dest_lang': 'en'
         }
-    src_name = reversed_bot_lang_from.get(users_config[hashed_user_id]['src_lang'])
-    dest_name = reversed_bot_lang_to.get(users_config[hashed_user_id]['dest_lang'])
+    config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
+    src_name = reversed_bot_lang_from.get(next(config_lang))
+    dest_name = reversed_bot_lang_to.get(next(config_lang))
     save_users_config(users_config)
     await message.answer(MESSAGES['/start'] + f'\n{src_name} ->> '
                                               f'{dest_name}')
@@ -36,20 +31,28 @@ async def start(message: Message):
 
 @router.message(Command(commands='change_language'))
 async def change_language(message: Message):
-    hashed_user_id, src_name, dest_name = await get_user_data(message)
+    user_id = str(message.from_user.id)
+    hashed_user_id = hash_user_id(user_id)
+    config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
+    src_name = reversed_bot_lang_from.get(next(config_lang))
+    dest_name = reversed_bot_lang_to.get(next(config_lang))
     await message.answer(MESSAGES['/change_language'])
     await message.answer(f'Source: {src_name}', reply_markup=create_language_keyboard(bot_lang_from, prefix='FROM'))
     await message.answer(f'Destination: {dest_name}', reply_markup=create_language_keyboard(bot_lang_to, prefix='TO'))
 
 
 @router.message(Command(commands='help'))
-async def help(message: Message):
+async def help_message(message: Message):
     await message.answer(MESSAGES['/help'])
 
 
 @router.message(Command(commands='configs'))
-async def help(message: Message):
-    hashed_user_id, src_name, dest_name = await get_user_data(message)
+async def configs_message(message: Message):
+    user_id = str(message.from_user.id)
+    hashed_user_id = hash_user_id(user_id)
+    config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
+    src_name = reversed_bot_lang_from.get(next(config_lang))
+    dest_name = reversed_bot_lang_to.get(next(config_lang))
     await message.answer(MESSAGES['/configs'] + f'\n{src_name} ->> '
                                                 f'{dest_name}')
 
@@ -65,7 +68,7 @@ async def send_translation(message: Message):
 
 
 @router.callback_query(F.data.startswith('FROM'))
-async def source_lang(callback: CallbackQuery):
+async def source_language(callback: CallbackQuery):
     language_code = callback.data.split('_')[-1]
     user_id = str(callback.from_user.id)
     hashed_user_id = hash_user_id(user_id)
@@ -77,7 +80,7 @@ async def source_lang(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.startswith('TO'))
-async def destination_lang(callback: CallbackQuery):
+async def destination_language(callback: CallbackQuery):
     language_code = callback.data.split('_')[-1]
     user_id = str(callback.from_user.id)
     hashed_user_id = hash_user_id(user_id)
