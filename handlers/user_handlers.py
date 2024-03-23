@@ -25,8 +25,7 @@ async def start_message(message: Message):
     src_name = reversed_bot_lang_from.get(next(config_lang))
     dest_name = reversed_bot_lang_to.get(next(config_lang))
     save_users_config(users_config)
-    await message.answer(MESSAGES['/start'] + f'\n{src_name} ->> '
-                                              f'{dest_name}')
+    await message.answer(f'{MESSAGES["/start"]}\n{src_name} ->> {dest_name}')
 
 
 @router.message(Command(commands='change_language'))
@@ -41,6 +40,20 @@ async def change_language(message: Message):
     await message.answer(f'Destination: {dest_name}', reply_markup=create_language_keyboard(bot_lang_to, prefix='TO'))
 
 
+@router.message(Command(commands='swap_language'))
+async def swap_language(message: Message):
+    user_id = str(message.from_user.id)
+    hashed_user_id = hash_user_id(user_id)
+    config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
+    src_lang, dest_lang = config_lang
+    src_name = reversed_bot_lang_from.get(src_lang)
+    dest_name = reversed_bot_lang_to.get(dest_lang)
+    users_config[hashed_user_id]['src_lang'] = dest_lang
+    users_config[hashed_user_id]['dest_lang'] = src_lang
+    save_users_config(users_config)
+    await message.answer(f'{MESSAGES["/configs"]}\n{dest_name} ->> {src_name}')
+
+
 @router.message(Command(commands='help'))
 async def help_message(message: Message):
     await message.answer(MESSAGES['/help'])
@@ -53,8 +66,7 @@ async def configs_message(message: Message):
     config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
     src_name = reversed_bot_lang_from.get(next(config_lang))
     dest_name = reversed_bot_lang_to.get(next(config_lang))
-    await message.answer(MESSAGES['/configs'] + f'\n{src_name} ->> '
-                                                f'{dest_name}')
+    await message.answer(f'{MESSAGES["/configs"]}\n{src_name} ->> {dest_name}')
 
 
 @router.message(F.content_type == ContentType.TEXT)

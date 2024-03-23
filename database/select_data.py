@@ -11,7 +11,7 @@ agg_by_dest = f'select user_id, dest_lang, count(*) as count_all from {STATS} gr
 def select_all_data():
     with sqlite3.connect(DATABASE_FILE) as conn:
         cursor = conn.cursor()
-        cursor.execute(f'select * from {STATS}')
+        cursor.execute(f'select * from {USERS_CONFIG}')
         rows = cursor.fetchall()
         columns = [description[0] for description in cursor.description]
     return columns, rows
