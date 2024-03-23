@@ -1,6 +1,7 @@
 MESSAGES: dict[str, str] = {
     '/start': 'Bienvenue à «Traducteur Rob Neuf».'
-              '\n\nVous pouvez choisir la langue en appuyant sur: \n/change_language \nou utiliser les paramètres par défaut.'
+              '\n\nTo get a translation, simply type in your message.'
+              '\n\nYou can choose the language by pressing:\n/change_language\nor use the default settings.'
               '\n\nParamètres définis maintenant:',
     '/help': '\nWelcome to our multi-language translator bot!'
              '\n\nThis is not your average translator bot.'
