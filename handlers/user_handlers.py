@@ -26,7 +26,7 @@ def get_language_names(hashed_user_id):
     dest_lang = users_config[hashed_user_id]['dest_lang']
     src_name = reversed_bot_lang_from.get(src_lang)
     dest_name = reversed_bot_lang_to.get(dest_lang)
-    return src_name, dest_name
+    return src_name, dest_name, src_lang, dest_lang
 
 
 @router.message(Command(commands='start'))
@@ -38,7 +38,7 @@ async def start_message(message: Message):
             'src_lang': 'auto',
             'dest_lang': 'en'
         }
-    src_name, dest_name = get_language_names(hashed_user_id)
+    src_name, dest_name, _, _ = get_language_names(hashed_user_id)
     save_users_config(users_config)
     await message.answer(f'{MESSAGES["/start"]}\n{src_name} ->> {dest_name}')
 
@@ -55,10 +55,7 @@ async def change_language(message: Message):
 async def swap_language(message: Message):
     user_id = str(message.from_user.id)
     hashed_user_id = hash_user_id(user_id)
-    config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
-    src_lang, dest_lang = config_lang
-    src_name = reversed_bot_lang_from.get(src_lang)
-    dest_name = reversed_bot_lang_to.get(dest_lang)
+    src_name, dest_name, src_lang, dest_lang = get_language_names(hashed_user_id)
     if src_lang == 'auto':
         await message.answer(MESSAGES['/swap_language'])
     else:
