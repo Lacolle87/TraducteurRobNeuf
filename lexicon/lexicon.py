@@ -23,7 +23,9 @@ MESSAGES: dict[str, str] = {
              '\n🌐 Auto Detect'
              '\n\nUse /swap_language to switch languages between source and destination.',
     '/change_language': 'Select desired language for translation:',
-    '/configs': 'Paramètres définis maintenant:'
+    '/configs': 'Paramètres définis maintenant:',
+    '/swap_language': 'You cannot set destination language to «auto». \n\nPlease change your language configurations:'
+                      '\n/change_language'
 }
 
 LEXICON_COMMANDS: dict[str, str] = {
