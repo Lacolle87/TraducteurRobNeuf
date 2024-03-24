@@ -1,24 +1,36 @@
-import sqlite3
+import psycopg
+from database.users_postgres import get_connection_str
 
-DATABASE_FILE = 'users.db'
 USERS_CONFIG = 'users_config'
 STATS = 'stats_data'
 
-agg_by_scr = f'select hashed_user_id, src_lang, count(*) as count_all from {STATS} group by 1, 2 order by 3 desc'
-agg_by_dest = f'select user_id, dest_lang, count(*) as count_all from {STATS} group by 1, 2 order by 3 desc'
+
+def get_users_configs():
+    with psycopg.connect(get_connection_str()) as conn:
+        with conn.cursor() as cur:
+            cur.execute(f'select * from {USERS_CONFIG}')
+            rows = cur.fetchall()
+            cols = [description[0] for description in cur.description]
+            return cols, rows
 
 
-def select_all_data():
-    with sqlite3.connect(DATABASE_FILE) as conn:
-        cursor = conn.cursor()
-        cursor.execute(f'select * from {USERS_CONFIG}')
-        rows = cursor.fetchall()
-        columns = [description[0] for description in cursor.description]
-    return columns, rows
+def get_stats():
+    with psycopg.connect(get_connection_str()) as conn:
+        with conn.cursor() as cur:
+            cur.execute(f'select * from {STATS}')
+            rows = cur.fetchall()
+            cols = [description[0] for description in cur.description]
+            return cols, rows
 
 
-column_names, rows = select_all_data()
+print('users_config')
+config_cols, config_rows = get_users_configs()
+print(*(column.ljust(12) for column in config_cols))
+for row in config_rows:
+    print(*(str(value)[:14].ljust(12) for value in row))
 
-print(*(column.ljust(4) for column in column_names))
-for row in rows:
-    print(*(str(value).ljust(4) for value in row))
+print('stats_data')
+stats_cols, stats_rows = get_stats()
+print(*(column.ljust(12) for column in stats_cols))
+for row in stats_rows:
+    print(*(str(value)[:14].ljust(12) for value in row))

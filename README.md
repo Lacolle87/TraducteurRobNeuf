@@ -1,3 +1,5 @@
+wtire it nicely
+
 # Traducteur Rob Neuf
 
 «Neuf» - from French language may mean «nine» or «new» - it's up to you to decide.
@@ -23,11 +25,11 @@ We support translation between 9 languages and even have an auto-detect feature 
 🇷🇺 Russian
 🌐 Auto Detect
 
+The project employs [aiogram](https://github.com/aiogram/aiogram), [googletrans](https://github.com/ssut/py-googletrans)
+and [psycopg](https://github.com/psycopg/psycopg) for its core functionalities.
 
-The project employs [aiogram](https://github.com/aiogram/aiogram)
-and [googletrans](https://github.com/ssut/py-googletrans).
-
-Users configurations are stored in [SQLite database](https://docs.python.org/3/library/sqlite3.html).
+Users configurations are stored in [PostgreSQL database](https://www.postgresql.org),
+with user IDs hashed using SHA256 to ensure they cannot be retrieved again.
 
 ## Project structure
 
@@ -38,8 +40,8 @@ TraducteurRobNeuf
 │   └── langs.py
 ├── database
 │   └── select_data.py
-│   └── users.db
-│   └── users_sqlite.py
+│   └── users_postgres.py
+│   └── users_stats.py
 ├── handlers
 │   └── other_handlers.py
 │   └── user_handlers.py
@@ -57,5 +59,5 @@ TraducteurRobNeuf
 ├── .gitignore
 ├── main.py
 ├── README.md
-└── requirements
+└── requirements.txt
 ```
