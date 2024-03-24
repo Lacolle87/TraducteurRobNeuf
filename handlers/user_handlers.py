@@ -76,8 +76,9 @@ async def configs_message(message: Message):
 @router.message(F.content_type == ContentType.TEXT)
 async def send_translation(message: Message):
     hashed_user_id = get_hashed_user_id(message)
-    config_lang = (users_config[hashed_user_id][key] for key in ['src_lang', 'dest_lang'])
-    translated_text = translate(message.text, src_lang=next(config_lang), dest_lang=next(config_lang))
+    hashed_user_config = users_config.get(hashed_user_id, {})
+    translated_text = translate(message.text,
+                                **{lang: hashed_user_config.get(lang) for lang in ['src_lang', 'dest_lang']})
     save_stats(users_config)
     await message.answer(translated_text)
 
