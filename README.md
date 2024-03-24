@@ -1,5 +1,3 @@
-wtire it nicely
-
 # Traducteur Rob Neuf
 
 «Neuf» - from French language may mean «nine» or «new» - it's up to you to decide.
