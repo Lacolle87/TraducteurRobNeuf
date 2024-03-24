@@ -2,8 +2,8 @@ from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message, ContentType
 from lexicon.lexicon import MESSAGES
-from database.users_sqlite import load_users_config, save_users_config
-from database.stats_data import save_stats
+from database.users_postgres import load_users_config, save_users_config
+from database.users_stats import save_stats
 from services.services import translate, hash_user_id
 from keyboards.keyboards import create_language_keyboard
 from config_data.langs import bot_lang_from, bot_lang_to, reversed_bot_lang_from, reversed_bot_lang_to
