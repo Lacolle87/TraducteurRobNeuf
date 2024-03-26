@@ -1,13 +1,16 @@
 from aiogram import F, Router
 from aiogram.filters import Command
-from aiogram.types import CallbackQuery, Message, ContentType
+from aiogram.types import CallbackQuery, Message, ContentType, BufferedInputFile
 from lexicon.lexicon import MESSAGES
 from database.users_postgres import load_users_config, save_users_config
 from database.users_stats import save_stats
+from database.select_data import get_stats, stats_to_csv, generate_filename
 from services.services import translate, hash_user_id
 from keyboards.keyboards import create_language_keyboard
 from config_data.langs import bot_lang_from, bot_lang_to, reversed_bot_lang_from, reversed_bot_lang_to
+from config_data.config import load_config
 
+config = load_config()
 router = Router()
 users_config = load_users_config()
 
@@ -71,6 +74,17 @@ async def help_message(message: Message):
 async def configs_message(message: Message):
     src_name, dest_name, _, _ = get_language_names(get_hashed_user_id(message))
     await message.answer(f'{MESSAGES["/configs"]}\n{src_name} ->> {dest_name}')
+
+
+@router.message(Command(commands='get_stats'))
+async def send_stats(message: Message):
+    if message.from_user.id in config.tg_bot.admin_ids:
+        cols, rows = get_stats()
+        csv_data = stats_to_csv(cols, rows)
+        file_name = generate_filename(rows)
+        await message.answer_document(BufferedInputFile(csv_data.encode(), filename=file_name))
+    else:
+        await message.answer(MESSAGES['/get_stats'])
 
 
 @router.message(F.content_type == ContentType.TEXT)

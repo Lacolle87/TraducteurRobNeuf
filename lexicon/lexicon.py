@@ -25,7 +25,8 @@ MESSAGES: dict[str, str] = {
     '/change_language': 'Select desired language for translation:',
     '/configs': 'Paramètres définis maintenant:',
     '/swap_language': 'You cannot set destination language to «auto». \n\nPlease change your language configurations:'
-                      '\n/change_language'
+                      '\n/change_language',
+    '/get_stats': '403 forbidden'
 }
 
 LEXICON_COMMANDS: dict[str, str] = {

@@ -14,3 +14,10 @@ def hash_user_id(user_id: str) -> str:
     hash_object = hashlib.sha256(user_id_bytes)
     hashed_user_id = hash_object.hexdigest()
     return hashed_user_id
+
+
+def hash_file_data(data: str) -> str:
+    file_hash = hashlib.sha256()
+    for line in data:
+        file_hash.update(line.encode('utf-8'))
+    return file_hash.hexdigest()
