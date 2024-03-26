@@ -88,11 +88,13 @@ async def source_language(callback: CallbackQuery):
     language_code = callback.data.split('_')[-1]
     user_id = str(callback.from_user.id)
     hashed_user_id = hash_user_id(user_id)
-    users_config[hashed_user_id]['src_lang'] = language_code
-    language_name = next((lang for lang, code in bot_lang_from.items() if code == language_code))
-    save_users_config(users_config)
-    await callback.message.edit_text(f'Source: {language_name}',
-                                     reply_markup=create_language_keyboard(bot_lang_from, prefix='FROM'))
+    current_src_lang = users_config[hashed_user_id]['src_lang']
+    if current_src_lang != language_code:
+        users_config[hashed_user_id]['src_lang'] = language_code
+        language_name = next((lang for lang, code in bot_lang_from.items() if code == language_code))
+        save_users_config(users_config)
+        await callback.message.edit_text(f'Source: {language_name}',
+                                         reply_markup=create_language_keyboard(bot_lang_from, prefix='FROM'))
 
 
 @router.callback_query(F.data.startswith('TO'))
@@ -100,8 +102,10 @@ async def destination_language(callback: CallbackQuery):
     language_code = callback.data.split('_')[-1]
     user_id = str(callback.from_user.id)
     hashed_user_id = hash_user_id(user_id)
-    users_config[hashed_user_id]['dest_lang'] = language_code
-    language_name = next((lang for lang, code in bot_lang_from.items() if code == language_code), None)
-    save_users_config(users_config)
-    await callback.message.edit_text(f'Destination: {language_name}',
-                                     reply_markup=create_language_keyboard(bot_lang_to, prefix='TO'))
+    current_dest_lang = users_config[hashed_user_id]['dest_lang']
+    if current_dest_lang != language_code:
+        users_config[hashed_user_id]['dest_lang'] = language_code
+        language_name = next((lang for lang, code in bot_lang_to.items() if code == language_code), None)
+        save_users_config(users_config)
+        await callback.message.edit_text(f'Destination: {language_name}',
+                                         reply_markup=create_language_keyboard(bot_lang_to, prefix='TO'))
