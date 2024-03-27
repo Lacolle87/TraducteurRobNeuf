@@ -9,6 +9,11 @@ config = load_config()
 cache = TTLCache(maxsize=100, ttl=300)
 
 
+def update_cached_users_config():
+    cache.clear()
+    logging.info("Cached users config cleared.")
+
+
 def get_connection_str() -> str:
     return (f'dbname={config.db.database} '
             f'user={config.db.db_user} '
@@ -67,6 +72,7 @@ def save_users_config(users_config):
                             ''', (hashed_user_id, src_lang, dest_lang))
                 conn.commit()
                 logging.info("Users config saved successfully.")
+                update_cached_users_config()
             except psycopg.Error as e:
                 logging.error(f"Error saving users config: {e}.")
                 conn.rollback()

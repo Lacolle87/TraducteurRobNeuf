@@ -13,7 +13,6 @@ from config_data.config import load_config
 
 config = load_config()
 router = Router()
-users_config = load_users_config()
 
 
 def get_hashed_user_id(message: Message) -> str:
@@ -22,7 +21,7 @@ def get_hashed_user_id(message: Message) -> str:
     return hashed_user_id
 
 
-def get_language_names(hashed_user_id: str) -> tuple[str, str, str, str]:
+def get_language_names(users_config: dict, hashed_user_id: str) -> tuple[str, str, str, str]:
     src_lang = users_config[hashed_user_id]['src_lang']
     dest_lang = users_config[hashed_user_id]['dest_lang']
     src_name = reversed_bot_lang_from.get(src_lang)
@@ -34,7 +33,7 @@ def get_language_names(hashed_user_id: str) -> tuple[str, str, str, str]:
 async def start_message(message: Message):
     user_id = str(message.from_user.id)
     hashed_user_id = hash_user_id(user_id)
-
+    users_config = load_users_config()
     if hashed_user_id not in users_config:
         users_config[hashed_user_id] = {
             'src_lang': 'auto',
@@ -45,13 +44,14 @@ async def start_message(message: Message):
     else:
         logging.info(f"User {hashed_user_id[:8]} already exists in config, skipping addition.")
 
-    src_name, dest_name, _, _ = get_language_names(hashed_user_id)
+    src_name, dest_name, _, _ = get_language_names(users_config, hashed_user_id)
     await message.answer(f'{MESSAGES["/start"]}\n{src_name} ->> {dest_name}')
 
 
 @router.message(Command(commands='change_language'))
 async def change_language(message: Message):
-    src_name, dest_name, _, _ = get_language_names(get_hashed_user_id(message))
+    users_config = load_users_config()
+    src_name, dest_name, _, _ = get_language_names(users_config, get_hashed_user_id(message))
     await message.answer(MESSAGES['/change_language'])
     await message.answer(f'Source: {src_name}', reply_markup=create_language_keyboard(bot_lang_from, prefix='FROM'))
     await message.answer(f'Destination: {dest_name}', reply_markup=create_language_keyboard(bot_lang_to, prefix='TO'))
@@ -61,7 +61,8 @@ async def change_language(message: Message):
 async def swap_language(message: Message):
     user_id = str(message.from_user.id)
     hashed_user_id = hash_user_id(user_id)
-    src_name, dest_name, src_lang, dest_lang = get_language_names(hashed_user_id)
+    users_config = load_users_config()
+    src_name, dest_name, src_lang, dest_lang = get_language_names(users_config, hashed_user_id)
     if src_lang == 'auto':
         await message.answer(MESSAGES['/swap_language'])
     else:
@@ -78,7 +79,8 @@ async def help_message(message: Message):
 
 @router.message(Command(commands='configs'))
 async def configs_message(message: Message):
-    src_name, dest_name, _, _ = get_language_names(get_hashed_user_id(message))
+    users_config = load_users_config()
+    src_name, dest_name, _, _ = get_language_names(users_config, get_hashed_user_id(message))
     await message.answer(f'{MESSAGES["/configs"]}\n{src_name} ->> {dest_name}')
 
 
@@ -95,6 +97,7 @@ async def send_stats(message: Message):
 
 @router.message(F.content_type == ContentType.TEXT)
 async def send_translation(message: Message):
+    users_config = load_users_config()
     hashed_user_id = get_hashed_user_id(message)
     hashed_user_config = users_config.get(hashed_user_id, {})
     translated_text = translate(message.text,
@@ -108,6 +111,7 @@ async def source_language(callback: CallbackQuery):
     language_code = callback.data.split('_')[-1]
     user_id = str(callback.from_user.id)
     hashed_user_id = hash_user_id(user_id)
+    users_config = load_users_config()
     current_src_lang = users_config[hashed_user_id]['src_lang']
     if current_src_lang != language_code:
         users_config[hashed_user_id]['src_lang'] = language_code
@@ -122,6 +126,7 @@ async def destination_language(callback: CallbackQuery):
     language_code = callback.data.split('_')[-1]
     user_id = str(callback.from_user.id)
     hashed_user_id = hash_user_id(user_id)
+    users_config = load_users_config()
     current_dest_lang = users_config[hashed_user_id]['dest_lang']
     if current_dest_lang != language_code:
         users_config[hashed_user_id]['dest_lang'] = language_code
