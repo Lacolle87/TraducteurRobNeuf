@@ -1,11 +1,10 @@
 import logging
 import psycopg
 from cachetools import cached, TTLCache
-from config_data.config import load_config
+from database.database import get_connection
 
 USERS_CONFIG = 'users_config'
 
-config = load_config()
 cache = TTLCache(maxsize=100, ttl=300)
 
 
@@ -14,24 +13,16 @@ def update_cached_users_config():
     logging.info("Cached users config cleared.")
 
 
-def get_connection_str() -> str:
-    return (f'dbname={config.db.database} '
-            f'user={config.db.db_user} '
-            f'password={config.db.db_password} '
-            f'host={config.db.db_host}')
-
-
-def create_table():
+def create_users_table(conn):
     try:
-        with psycopg.connect(get_connection_str()) as conn:
-            with conn.cursor() as cur:
-                cur.execute(f'''create table if not exists {USERS_CONFIG} (
-                                id serial primary key,
-                                hashed_user_id text unique,
-                                src_lang text,
-                                dest_lang text
-                              )''')
-                conn.commit()
+        with conn.cursor() as cur:
+            cur.execute(f'''create table if not exists {USERS_CONFIG} (
+                            id serial primary key,
+                            hashed_user_id text unique,
+                            src_lang text,
+                            dest_lang text
+                          )''')
+            conn.commit()
         logging.info("Users config table created successfully.")
     except psycopg.Error as e:
         logging.error(f"Error creating users config table: {e}.")
@@ -39,25 +30,25 @@ def create_table():
 
 @cached(cache=cache)
 def load_users_config():
-    create_table()
-    users_config = {}
-    try:
-        with psycopg.connect(get_connection_str()) as conn:
+    with get_connection() as conn:
+        create_users_table(conn)
+        users_config = {}
+        try:
             with conn.cursor() as cur:
                 cur.execute(f'select hashed_user_id, src_lang, dest_lang from {USERS_CONFIG}')
                 rows = cur.fetchall()
                 for row in rows:
                     hashed_user_id, src_lang, dest_lang = row
                     users_config[str(hashed_user_id)] = {'src_lang': src_lang, 'dest_lang': dest_lang}
-        logging.info("Users config loaded successfully.")
-    except psycopg.Error as e:
-        logging.error(f"Error loading users config: {e}.")
-    return users_config
+            logging.info("Users config loaded successfully.")
+        except psycopg.Error as e:
+            logging.error(f"Error loading users config: {e}.")
+        return users_config
 
 
 def save_users_config(users_config):
-    create_table()
-    with psycopg.connect(get_connection_str()) as conn:
+    with get_connection() as conn:
+        create_users_table(conn)
         with conn.cursor() as cur:
             try:
                 conn.autocommit = False

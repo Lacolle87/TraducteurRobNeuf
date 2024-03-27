@@ -4,20 +4,20 @@ import psycopg
 import logging
 from datetime import datetime
 from services.services import hash_file_data
-from database.users_postgres import get_connection_str
+from database.database import get_connection
 
 STATS = 'stats_data'
 
 
 def get_stats():
+    conn = get_connection()
     try:
-        with psycopg.connect(get_connection_str()) as conn:
-            with conn.cursor() as cur:
-                cur.execute(f'select * from {STATS}')
-                rows = cur.fetchall()
-                cols = [description[0] for description in cur.description]
-                logging.info("Retrieved stats from the database")
-                return cols, rows
+        with conn.cursor() as cur:
+            cur.execute(f'select * from {STATS}')
+            rows = cur.fetchall()
+            cols = [description[0] for description in cur.description]
+            logging.info("Retrieved stats from the database")
+            return cols, rows
     except psycopg.Error as e:
         logging.error(f"Error getting stats from the database: {e}")
         return None, None
