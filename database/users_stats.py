@@ -24,19 +24,19 @@ def create_stats_table(conn):
 
 
 def save_stats(users_config):
-    with get_connection() as conn:
-        create_stats_table(conn)
-        try:
-            with conn.cursor() as cur:
-                for hashed_user_id, config in users_config.items():
-                    src_lang = config['src_lang']
-                    dest_lang = config['dest_lang']
-                    cur.execute(f'''
+    conn = get_connection()
+    create_stats_table(conn)
+    try:
+        with conn.cursor() as cur:
+            for hashed_user_id, config in users_config.items():
+                src_lang = config['src_lang']
+                dest_lang = config['dest_lang']
+                cur.execute(f'''
                     insert into {STATS} (hashed_user_id, src_lang, dest_lang, created_at)
                     values (%s, %s, %s, current_timestamp)
                     ''', (hashed_user_id, src_lang, dest_lang))
-                conn.commit()
-            logging.info("Stats saved successfully.")
-        except psycopg.Error as e:
-            logging.error(f"Error saving stats: {e}.")
-            conn.rollback()
+            conn.commit()
+        logging.info("Stats saved successfully.")
+    except psycopg.Error as e:
+        logging.error(f"Error saving stats: {e}.")
+        conn.rollback()
