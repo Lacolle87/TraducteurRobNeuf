@@ -1,3 +1,4 @@
+import logging
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message, ContentType, BufferedInputFile
@@ -33,13 +34,18 @@ def get_language_names(hashed_user_id: str) -> tuple[str, str, str, str]:
 async def start_message(message: Message):
     user_id = str(message.from_user.id)
     hashed_user_id = hash_user_id(user_id)
+
     if hashed_user_id not in users_config:
         users_config[hashed_user_id] = {
             'src_lang': 'auto',
             'dest_lang': 'en'
         }
+        save_users_config(users_config)
+        logging.info(f"New user {hashed_user_id[:8]} added to the configuration.")
+    else:
+        logging.info(f"User {hashed_user_id[:8]} already exists in config, skipping addition.")
+
     src_name, dest_name, _, _ = get_language_names(hashed_user_id)
-    save_users_config(users_config)
     await message.answer(f'{MESSAGES["/start"]}\n{src_name} ->> {dest_name}')
 
 

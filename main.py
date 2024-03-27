@@ -1,15 +1,21 @@
 import asyncio
+import logging
 from aiogram import Bot, Dispatcher
 from config_data.config import load_config
 from handlers import user_handlers, other_handlers
-from logger.logger import setup_logger
 from keyboards.main_menu import set_main_menu
+from logger.logger import setup_logger
 
 
 async def main():
-    config = load_config()
-
     setup_logger()
+
+    try:
+        config = load_config()
+        logging.info("Configuration loaded successfully")
+    except Exception as e:
+        logging.error(f"Error loading configuration: {e}")
+        return
 
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher()
