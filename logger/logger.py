@@ -4,16 +4,14 @@ from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 
 
-def setup_logger(log_file='bot.log'):
-    logs_folder = 'logs'
-
+def setup_logger(logs_folder='logs', log_file='bot.log'):
     if not os.path.exists(logs_folder):
         os.makedirs(logs_folder)
 
     log_path = os.path.join(logs_folder, log_file)
 
-    for handler in logging.root.handlers[:]:
-        logging.root.removeHandler(handler)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
 
     handler = TimedRotatingFileHandler(log_path, when='W0', interval=1, backupCount=3)
     handler.suffix = '%d'
@@ -22,8 +20,6 @@ def setup_logger(log_file='bot.log'):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
     logger.addHandler(handler)
 
     return logger
