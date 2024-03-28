@@ -1,10 +1,12 @@
 import asyncio
 import logging
+import signal
 from aiogram import Bot, Dispatcher
 from config_data.config import load_config
 from handlers import user_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
 from logger.logger import setup_logger
+from services.services import sigint_handler, sigterm_handler
 
 
 async def main():
@@ -29,4 +31,11 @@ async def main():
     await dp.start_polling(bot)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    loop.run_until_complete(main())
+
+    loop.add_signal_handler(signal.SIGTERM, sigterm_handler())
+    loop.add_signal_handler(signal.SIGINT, sigint_handler())

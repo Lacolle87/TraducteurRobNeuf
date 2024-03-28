@@ -21,3 +21,15 @@ def get_connection():
         logging.info("Reusing existing database connection...")
 
     return db_connection
+
+
+def close_database_connection():
+    global db_connection
+    if db_connection is not None and db_connection.closed == 0:
+        try:
+            db_connection.close()
+            logging.info("Database connection closed.")
+        except Exception as e:
+            logging.error(f"Error closing database connection: {e}")
+    else:
+        logging.warning("No open database connection to close or connection is already closed.")

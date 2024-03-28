@@ -1,6 +1,8 @@
+import sys
 import logging
 import hashlib
 from googletrans import Translator
+from database.database import close_database_connection
 
 translator = Translator()
 
@@ -30,3 +32,23 @@ def hash_file_data(data: str) -> str:
         return file_hash.hexdigest()
     except Exception as e:
         logging.error(f"Error hashing file data: {e}")
+
+
+def sigterm_handler():
+    try:
+        logging.info("SIGTERM received. Shutting down...")
+        close_database_connection()
+        sys.exit(0)
+    except Exception as e:
+        logging.error(f"Error in sigterm_handler: {e}")
+        sys.exit(1)
+
+
+def sigint_handler():
+    try:
+        logging.info("Received SIGINT signal. Shutting down...")
+        close_database_connection()
+        sys.exit(0)
+    except Exception as e:
+        logging.error(f"Error in sigint_handler: {e}")
+        sys.exit(1)
