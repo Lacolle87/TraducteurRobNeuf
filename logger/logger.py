@@ -1,5 +1,6 @@
 import os
 import logging
+from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 
 
@@ -15,6 +16,7 @@ def setup_logger(log_file='bot.log'):
         logging.root.removeHandler(handler)
 
     handler = TimedRotatingFileHandler(log_path, when='W0', interval=1, backupCount=3)
+    handler.suffix = '%d'
     handler.setLevel(logging.INFO)
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
