@@ -2,3 +2,5 @@
 .idea/
 *.db
 /logs/
+/docker-compose.yml
+/Dockerfile
