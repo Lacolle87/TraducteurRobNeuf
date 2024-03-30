@@ -4,3 +4,4 @@
 /logs/
 /docker-compose.yml
 /Dockerfile
+/.dockerignore
