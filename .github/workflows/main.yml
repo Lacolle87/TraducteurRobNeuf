@@ -76,7 +76,7 @@ jobs:
           cd trn
           sudo docker compose -f docker-compose.yml pull
           sudo docker compose -f docker-compose.yml down
-          sudo docker compose -f docker-compose.yml --env-file=./env/.env up up -d
+          sudo docker compose -f docker-compose.yml --env-file=./env/.env up -d
 
   send_message:
     runs-on: ubuntu-latest
