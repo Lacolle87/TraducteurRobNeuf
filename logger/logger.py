@@ -12,13 +12,18 @@ def setup_logger(logs_folder='logs', log_file='bot.log'):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    handler = TimedRotatingFileHandler(log_path, when='W0', interval=1, backupCount=3)
-    handler.suffix = '%d'
-    handler.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+
+    file_handler = TimedRotatingFileHandler(log_path, when='W0', interval=1, backupCount=3)
+    file_handler.suffix = '%Y-%m-%d'
+    file_handler.setLevel(logging.INFO)
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
 
-    logger.addHandler(handler)
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
 
     return logger
