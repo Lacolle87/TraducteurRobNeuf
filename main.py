@@ -7,16 +7,24 @@ from handlers import user_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
 from logger.logger import setup_logger
 from services.services import sigint_handler, sigterm_handler
+from database.database import get_connection, create_tables
+
+
+def init_db():
+    try:
+        db_connection = get_connection()
+        create_tables(db_connection)
+        logging.info('Database initialized successfully.')
+    except Exception as e:
+        logging.error(f"Error initializing database: {e}")
 
 
 async def main():
-    setup_logger()
-
     try:
         config = load_config()
-        logging.info("Configuration loaded successfully")
+        logging.info("Configuration loaded successfully.")
     except Exception as e:
-        logging.error(f"Error loading configuration: {e}")
+        logging.error(f"Error loading configuration: {e}.")
         return
 
     bot = Bot(token=config.tg_bot.token)
@@ -31,7 +39,11 @@ async def main():
     await dp.start_polling(bot)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    setup_logger()
+
+    init_db()
+
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
