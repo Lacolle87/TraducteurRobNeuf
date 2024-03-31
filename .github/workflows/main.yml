@@ -2,11 +2,14 @@ name: Main TRN workflows
 
 on:
   push:
+    branches:
+      - main
 
 jobs:
   tests:
     name: PEP8 check
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -50,7 +53,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build_and_push_to_docker_hub
-    if: github.ref == 'refs/heads/main'
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3

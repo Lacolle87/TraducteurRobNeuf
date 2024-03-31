@@ -23,7 +23,8 @@ services:
       retries: 5
 
   bot:
-    image: lacolle87/trn_bot:latest
+#    image: lacolle87/trn_bot:latest
+    build: .
     restart: always
     env_file: ./env/.env
     volumes:

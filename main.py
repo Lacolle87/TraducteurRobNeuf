@@ -7,19 +7,22 @@ from handlers import user_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
 from logger.logger import setup_logger
 from services.services import sigint_handler, sigterm_handler
-from database.database import get_connection, create_tables
+from database.database import Database
 
 
-def init_db():
+async def init_db():
     try:
-        db_connection = get_connection()
-        create_tables(db_connection)
+        db_manager = Database()
+        db_manager.create_tables()
         logging.info('Database initialized successfully.')
     except Exception as e:
         logging.error(f"Error initializing database: {e}")
 
 
 async def main():
+    setup_logger()
+    await init_db()
+
     try:
         config = load_config()
         logging.info("Configuration loaded successfully.")
@@ -40,14 +43,10 @@ async def main():
 
 
 if __name__ == "__main__":
-    setup_logger()
-
-    init_db()
-
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
     loop.run_until_complete(main())
 
-    loop.add_signal_handler(signal.SIGTERM, sigterm_handler())
-    loop.add_signal_handler(signal.SIGINT, sigint_handler())
+    loop.add_signal_handler(signal.SIGTERM, sigterm_handler)
+    loop.add_signal_handler(signal.SIGINT, sigint_handler)

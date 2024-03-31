@@ -1,7 +1,7 @@
 import logging
 import psycopg
 from cachetools import cached, TTLCache
-from database.database import get_connection
+from database.database import Database
 
 USERS_CONFIG = 'users_config'
 
@@ -15,7 +15,8 @@ def update_cached_users_config():
 
 @cached(cache=cache)
 def load_users_config():
-    conn = get_connection()
+    database = Database()
+    conn = database.get_connection()
     users_config = {}
     try:
         with conn.cursor() as cur:
@@ -31,7 +32,8 @@ def load_users_config():
 
 
 def save_users_config(users_config):
-    conn = get_connection()
+    database = Database()
+    conn = database.get_connection()
     with conn.cursor() as cur:
         try:
             for hashed_user_id, config in users_config.items():
