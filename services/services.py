@@ -2,7 +2,7 @@ import sys
 import logging
 import hashlib
 from googletrans import Translator
-from database.database import close_database_connection
+from database.database import close_database
 
 translator = Translator()
 
@@ -37,7 +37,7 @@ def hash_file_data(data: str) -> str:
 def sigterm_handler():
     try:
         logging.info("SIGTERM received. Shutting down...")
-        close_database_connection()
+        close_database()
         sys.exit(0)
     except Exception as e:
         logging.error(f"Error in sigterm_handler: {e}")
@@ -47,7 +47,7 @@ def sigterm_handler():
 def sigint_handler():
     try:
         logging.info("Received SIGINT signal. Shutting down...")
-        close_database_connection()
+        close_database()
         sys.exit(0)
     except Exception as e:
         logging.error(f"Error in sigint_handler: {e}")

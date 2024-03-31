@@ -16,10 +16,10 @@ def get_stats():
             cur.execute(f'select * from {STATS}')
             rows = cur.fetchall()
             cols = [description[0] for description in cur.description]
-            logging.info("Retrieved stats from the database")
+            logging.info("Retrieved stats from the database.")
             return cols, rows
     except psycopg.Error as e:
-        logging.error(f"Error getting stats from the database: {e}")
+        logging.error(f"Error getting stats from the database: {e}.")
         return None, None
 
 
@@ -30,10 +30,10 @@ def stats_to_csv(columns, data):
         writer.writerow(columns)
         writer.writerows(data)
         csv_data = output.getvalue()
-        logging.info("Converted stats to CSV successfully")
+        logging.info("Converted stats to CSV successfully.")
         return csv_data
     except (io.UnsupportedOperation, csv.Error) as e:
-        logging.error(f"Error converting stats to CSV: {e}")
+        logging.error(f"Error converting stats to CSV: {e}.")
         return None
 
 
@@ -43,8 +43,8 @@ def generate_filename(data):
         hashed_data = hash_file_data('\n'.join(data_to_hash))[-4:]
         current_date = datetime.now().strftime('%Y-%m-%d')
         file_name = f'stats_data_{current_date}_{hashed_data}.csv'
-        logging.info("Generated filename for stats data")
+        logging.info("Generated filename for stats data.")
         return file_name
     except Exception as e:
-        logging.error(f"Error generating filename for stats data: {e}")
+        logging.error(f"Error generating filename for stats data: {e}.")
         return None
